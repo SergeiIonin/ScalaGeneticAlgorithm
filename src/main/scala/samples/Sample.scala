@@ -2,8 +2,8 @@ package samples
 
 trait Sample[Gene] {
 
-  type Sample[Gene] = List[Gene]
+  type Sample = List[Gene]
 
-  type Population[Gene] = List[Sample[Gene]]
+  type Population = List[Sample]
 }
 

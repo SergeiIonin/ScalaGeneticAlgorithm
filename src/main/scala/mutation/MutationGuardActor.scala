@@ -1,8 +1,8 @@
 package mutation
 
 import akka.actor.{Actor, ActorLogging}
-import samples.Sample.Population
 
+/*
 class MutationGuardActor[T](subpopulation: Population[T]) extends Actor with ActorLogging {
 
 
@@ -12,3 +12,4 @@ class MutationGuardActor[T](subpopulation: Population[T]) extends Actor with Act
 object MutationGuardActor {
   def props
 }
+*/

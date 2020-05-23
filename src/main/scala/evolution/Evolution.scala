@@ -2,25 +2,20 @@ package evolution
 
 import samples.Sample
 
-import scala.util.Random
-
 trait Evolution[Gene] extends Sample[Gene] {
   def percentageMutation: Int
   def percentageCrossing: Int = 100 - percentageMutation
   def sizePopulation: Int
-  def population: Population[Gene]
+  def population: Population
 
-  val sizeSubPopulationMutation = percentageMutation*sizePopulation/100
-  val sizeSubPopulationCrossing = sizePopulation - sizeSubPopulationMutation
-  def shuffledPopulation: Population[Gene] //= Random.shuffle(population)
+  lazy val sizeSubPopulationMutation = (sizePopulation*percentageMutation)/100
+  lazy val sizeSubPopulationCrossing = sizePopulation - sizeSubPopulationMutation
+  def shuffledPopulation: Population
 
-  def subPopulationMutation: Population[Gene] =
-    shuffledPopulation.take(sizeSubPopulationMutation)
+  def subPopulationMutation: Population = shuffledPopulation.take(sizeSubPopulationMutation)
 
-  def subPopulationCrossing: Population[Gene] =
-    shuffledPopulation.takeRight(sizeSubPopulationCrossing)
+  def subPopulationCrossing: Population = shuffledPopulation.takeRight(sizeSubPopulationCrossing)
 }
-
 
 trait EvolutionDouble extends Evolution[Double]
 

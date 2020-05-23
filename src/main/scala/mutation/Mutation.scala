@@ -1,45 +1,42 @@
 package mutation
 
-import akka.actor.{Actor, ActorLogging}
-import evolution.{Evolution, EvolutionDouble, EvolutionFloat, EvolutionInt}
+import evolution.Evolution
 
 import scala.util.Random
 
 trait Mutation[Gene] {
   evolution: Evolution[Gene] =>
 
-  def variationRate: Float // value in percent
+  def variationRate: Int // value in percent
 
-  def randomnessFloat: Float = 1 + Random.between(-variationRate/100, variationRate/100)
-  def randomnessDouble: Double = 1 + Random.between(-variationRate/100, variationRate/100)
-  def randomnessInt: Int = 1 + Random.between(-variationRate.toInt/100, variationRate.toInt/100)
+  def randomness: Any
 
-  def mutate: Population[AnyVal] = evolution match {
-    case _: EvolutionInt => mutateInt(subPopulationMutation.asInstanceOf[Population[Int]])
-    case _: EvolutionFloat => mutateFloat(subPopulationMutation.asInstanceOf[Population[Float]])
-    case _: EvolutionDouble => mutateDouble(subPopulationMutation.asInstanceOf[Population[Double]])
-    case _ => throw new IllegalArgumentException("Attempt to try mutation with unimplemented type")
-  }
+  def mutate: Population
+}
 
-  private def mutateInt(population: Population[Int]) =
-    for {
-      sample <- population
-      gene <- sample
-    } yield List(gene * randomnessInt)
+trait MutationInt extends Mutation[Int] {
+  evolution: Evolution[Int] =>
 
-  private def mutateFloat(population: Population[Float]) =
-    for {
-      sample <- population
-      gene <- sample
-    } yield List(gene * randomnessFloat)
+  def randomness: Int = Random.between(-1, 2) // note that second param is maxExclusive !!!
 
-  private def mutateDouble(population: Population[Double]) =
-    for {
-      sample <- population
-      gene <- sample
-    } yield List(gene * randomnessDouble)
-
+  def mutate = subPopulationMutation.map(sample => sample.map(gene => gene + randomness*(gene*variationRate/100)))
 
 }
 
+trait MutationFloat extends Mutation[Float] {
+  evolution: Evolution[Float] =>
+
+  def randomness: Float = 1 + Random.between(-variationRate.toFloat/100, variationRate.toFloat/100)
+
+  def mutate = subPopulationMutation.map(sample => sample.map(_*randomness))
+
+}
+
+trait MutationDouble extends Mutation[Double] {
+  evolution: Evolution[Double] =>
+
+  def randomness: Double = 1 + Random.between(-variationRate.toFloat/100, variationRate.toFloat/100)
+
+  def mutate = subPopulationMutation.map(sample => sample.map(_*randomness))
+}
 
